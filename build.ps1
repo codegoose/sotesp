@@ -1,0 +1,2 @@
+"Linking into 'sotesp.exe' ..."
+g++ -I..\include -L..\library main.cpp cg.o -lcurl -lfmt -limgui -lfreetype -lglfw -lglew -lopengl32 -lgdi32 -ldwmapi -lws2_32 -lwldap32 -lcrypt32 -lpsapi -o sotesp.exe -O3 --std=c++17
