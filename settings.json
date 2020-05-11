@@ -1,0 +1,373 @@
+{
+	"render_groups": {
+		"Artifacts": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_Treasure_Artifact_Proxy_vase_01_a_C",
+				"BP_Treasure_Artifact_Proxy_vase_03_a_C",
+				"BP_Treasure_Artifact_Proxy_vase_02_a_C",
+				"BP_Treasure_Artifact_Proxy_box_01_a_C",
+				"BP_Treasure_Artifact_Proxy_goblet_02_a_C",
+				"BP_Treasure_Artifact_Proxy_DVR_Rare_C",
+				"BP_Treasure_Artifact_Proxy_goblet_03_a_C",
+				"BP_Treasure_Artifact_Proxy_AshenDragon_Artifact1_C",
+				"BP_Treasure_Artifact_Proxy_AshenDragon_Artifact2_C",
+				"BP_Treasure_Artifact_Proxy_AshenDragon_Artifact3_C",
+				"BP_Treasure_Artifact_Proxy_DVR_Common_C",
+				"BP_Treasure_Artifact_Proxy_DVR_Legendary_C",
+				"BP_Treasure_Artifact_Proxy_DVR_Mythical_C",
+				"BP_Treasure_Artifact_Proxy_impressive_02_a_C",
+				"BP_SunkenCurseArtefact_Emerald_C",
+				"BP_AshenKey_Proxy_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 0.07058823853731155,
+				"g": 0.8823529481887817,
+				"r": 0.8823529481887817
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 0.07058823853731155,
+				"g": 0.8823529481887817,
+				"r": 0.8745098114013672
+			},
+			"use_flat_extents": true
+		},
+		"Chests": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_TreasureChest_Proxy_Mythical_C",
+				"BP_ShipwreckTreasureChest_Proxy_Rare_C",
+				"BP_TreasureChest_Proxy_Legendary_DVR_C",
+				"BP_TreasureChest_Proxy_Mythical_DVR_C",
+				"BP_ShipwreckTreasureChest_Proxy_Common_C",
+				"BP_TreasureChest_Proxy_AIShip_C",
+				"BP_TreasureChest_Proxy_Fort_C",
+				"BP_TreasureChest_Proxy_Rare_C",
+				"BP_TreasureChest_Proxy_Rare_DVR_C",
+				"BP_TreasureChest_Proxy_Common_Rome_C",
+				"BP_TreasureChest_Proxy_Legendary_Rome_C",
+				"BP_TreasureChest_Proxy_Mythical_Rome_C",
+				"BP_TreasureChest_Proxy_Rare_Rome_C",
+				"BP_ShipwreckTreasureChest_Proxy_Legendary_C",
+				"BP_TreasureChest_Proxy_ChestOfRage_C",
+				"BP_TreasureChest_Proxy_Common_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 1.0,
+				"g": 0.9215686321258545,
+				"r": 0.0
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 1.0,
+				"g": 0.9215686321258545,
+				"r": 0.0
+			},
+			"use_flat_extents": true
+		},
+		"Collections": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_CollectorsChest_Proxy_C",
+				"BP_AshenChestCollectorsChest_Proxy_C",
+				"BP_MerchantCrate_AnyItemCrate_Proxy_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 1.0,
+				"g": 0.9215686321258545,
+				"r": 0.0
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 1.0,
+				"g": 0.9215686321258545,
+				"r": 0.0
+			},
+			"use_flat_extents": true
+		},
+		"Crates": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_MerchantCrate_Commodity_SugarCrate_Proxy_C",
+				"BP_MerchantCrate_Commodity_Fort_Proxy_C",
+				"BP_MerchantCrate_Commodity_Gemstones_Proxy_C",
+				"BP_MerchantCrate_Commodity_SilkCrate_Proxy_C",
+				"BP_MerchantCrate_Commodity_SpiceCrate_Proxy_C",
+				"BP_MerchantCrate_Commodity_TeaCrate_Proxy_C",
+				"BP_MerchantCrate_WoodCrateProxy_C",
+				"BP_MerchantCrate_Commodity_Ore_Proxy_C",
+				"BP_MerchantCrate_Commodity_VolcanicStone_Proxy_C",
+				"BP_MerchantCrate_BananaCrateProxy_C",
+				"BP_MerchantCrate_PigCrateProxy_C",
+				"BP_MerchantCrate_Commodity_Minerals_Proxy_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 0.40392157435417175,
+				"g": 0.40392157435417175,
+				"r": 0.43529412150382996
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 0.40392157435417175,
+				"g": 0.40392157435417175,
+				"r": 0.43529412150382996
+			},
+			"use_flat_extents": true
+		},
+		"Food": {
+			"border_thickness": 2,
+			"draw_extents": true,
+			"draw_name": false,
+			"draw_origin": false,
+			"members": [
+				"BP_fod_CoconutFresh_00_a_ItemProxy_C",
+				"BP_fod_BananaFresh_00_a_ItemProxy_C",
+				"BP_fod_MangoFresh_00_a_ItemProxy_C",
+				"BP_fod_GrubsFresh_00_a_ItemProxy_C",
+				"BP_fod_ChickenMeatRaw_00_a_ItemProxy_C",
+				"BP_fod_PomegranateFresh_00_a_ItemProxy_C",
+				"BP_fod_SharkMeatRaw_00_a_ItemProxy_C",
+				"BP_fod_SnakeMeatBurned_00_a_ItemProxy_C",
+				"BP_fod_SnakeMeatRaw_00_a_ItemProxy_C",
+				"BP_fod_EarthwormsFresh_00_a_ItemProxy_C",
+				"BP_fod_LeechesFresh_00_a_ItemProxy_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 0.0,
+				"g": 1.0,
+				"r": 0.027450980618596077
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 0.0,
+				"g": 1.0,
+				"r": 0.027450980618596077
+			},
+			"use_flat_extents": true
+		},
+		"Gems": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_MermaidGem_Proxy_Emerald_C",
+				"BP_MermaidGem_Proxy_Sapphire_C",
+				"BP_MermaidGem_Proxy_Ruby_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 0.9490196108818054,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 0.9490196108818054,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"use_flat_extents": true
+		},
+		"Gunpowder": {
+			"border_thickness": 2,
+			"draw_extents": true,
+			"draw_name": false,
+			"draw_origin": false,
+			"members": [
+				"BP_MerchantCrate_GunpowderBarrelProxy_C",
+				"BP_MerchantCrate_BigGunpowderBarrelProxy_C"
+			],
+			"misc_color": {
+				"a": 0.5882353186607361,
+				"b": 1.0,
+				"g": 1.0,
+				"r": 1.0
+			},
+			"text_color": {
+				"a": 1.0,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"use_flat_extents": true
+		},
+		"High Threat": {
+			"border_thickness": 2,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_PlayerPirate_C",
+				"BP_MediumShipTemplate_C",
+				"BP_SmallShipTemplate_C",
+				"BP_LargeShipTemplate_C",
+				"BP_MediumShipNetProxy_C",
+				"BP_SmallShipNetProxy_C",
+				"BP_LargeShipNetProxy_C",
+				"BP_Goldhoarder_Humphrey_C"
+			],
+			"misc_color": {
+				"a": 0.8627451062202454,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"text_color": {
+				"a": 0.8627451062202454,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"use_flat_extents": true
+		},
+		"Medium Threat": {
+			"border_thickness": 2,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_AILargeShipTemplate_C",
+				"BP_AISmallShipTemplate_C",
+				"BP_AILargeShipNetProxy_C",
+				"BP_AISmallShipNetProxy_C",
+				"BP_SkeletonPawnBase_C",
+				"BP_Shark_C",
+				"BP_TinyShark_C"
+			],
+			"misc_color": {
+				"a": 0.5882353186607361,
+				"b": 0.0,
+				"g": 0.3960784375667572,
+				"r": 1.0
+			},
+			"text_color": {
+				"a": 0.8627451062202454,
+				"b": 0.0,
+				"g": 0.3960784375667572,
+				"r": 1.0
+			},
+			"use_flat_extents": true
+		},
+		"Misc": {
+			"border_thickness": 2,
+			"draw_extents": true,
+			"draw_name": false,
+			"draw_origin": false,
+			"members": [
+				"BP_PortableAmmoCrate_Proxy_C",
+				"BP_Rowboat_C",
+				"BP_Rowboat_WithFrontHarpoon_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 0.5568627715110779,
+				"g": 0.9607843160629272,
+				"r": 0.5686274766921997
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 0.5568627715110779,
+				"g": 0.9607843160629272,
+				"r": 0.5686274766921997
+			},
+			"use_flat_extents": true
+		},
+		"Projectiles": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"members": [
+				"BP_Projectile_CannonBall_C"
+			],
+			"misc_color": {
+				"a": 1.0,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"text_color": {
+				"a": 1.0,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 1.0
+			},
+			"use_flat_extents": true
+		},
+		"Quest": {
+			"draw_name": false,
+			"members": [
+				"BP_SkeletonKey_Proxy_C",
+				"BP_CollectorsChest_TempCursedRogue_Proxy_C"
+			]
+		},
+		"Shipwreck": {
+			"border_thickness": 2,
+			"draw_extents": true,
+			"draw_name": false,
+			"draw_origin": false,
+			"members": [
+				"BP_Shipwreck_01_a_NetProxy_C"
+			],
+			"misc_color": {
+				"a": 1.0,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 9.999999974752427e-07
+			},
+			"text_color": {
+				"a": 1.0,
+				"b": 0.0,
+				"g": 0.0,
+				"r": 9.999999974752427e-07
+			},
+			"use_flat_extents": true
+		},
+		"Skulls": {
+			"border_thickness": 3,
+			"draw_extents": true,
+			"draw_name": true,
+			"draw_origin": false,
+			"members": [
+				"BP_BountyRewardSkull_Proxy_Legendary_C",
+				"BP_BountyRewardSkull_Proxy_Rare_DVR_C",
+				"BP_BountyRewardSkull_Proxy_Rare_C",
+				"BP_BountyRewardSkull_Proxy_Mythical_C",
+				"BP_BountyRewardSkull_Proxy_Fort_C",
+				"BP_BountyRewardSkull_Proxy_Mythical_DVR_C",
+				"BP_BountyRewardSkull_Proxy_Common_DVR_C",
+				"BP_BountyRewardSkull_Proxy_Legendary_DVR_C"
+			],
+			"misc_color": {
+				"a": 0.501960813999176,
+				"b": 1.0,
+				"g": 0.2235294133424759,
+				"r": 0.6117647290229797
+			},
+			"text_color": {
+				"a": 0.501960813999176,
+				"b": 1.0,
+				"g": 0.2235294133424759,
+				"r": 0.6117647290229797
+			},
+			"use_flat_extents": true
+		}
+	}
+}
