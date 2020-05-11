@@ -1,17 +1,22 @@
 # SOTESP
+> The acronym commonly used when describing "ESP hacks" stands for Extra Sensory Perception. Basically psychic perception or the ability to know things that are otherwise unknowable. In relation to the hack its basically a cheat overlay that lets you know the locations of, or see every player in the game whether there are walls or terrain in the way or whatever. Its not an aimbot but knowing where a player will be and when gives you a borderline supernatural edge in combat, thus calling it "ESP". 
 
-![screen1](https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-0.png)
-![screen2](https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-1.png)
-![screen3](https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-5.png)
+### Examples
+
+<p float="left">
+  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/ui-1.gif" width="800" /> 
+  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/ui-2.gif" width="480" />
+</p>
+<p float="left">
+  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-0.png" width="400" />
+  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-1.png" width="400" /> 
+  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-5.png" width="500" />
+</p>
 
 ### Status
-
 As far as I've experienced this is undetected. At the time of writing this, Sea of Thieves doesn't have any official anti-cheat software to worry about. Additionally, just due to the fact that is functions via a transparent overlay window, the hack is not be visible when streaming the game.
-
 ### How's this work?
-
 Primarily based off of Unreal Engine 4.10.1 source code; commited memory pages in the "SoTGame.exe" module of the target process are scanned for static pointers to two UE4 TArray objects: ***GNames*** is a structure which is used to map ID codes of in-game objects to human-readable names like "BP_SmallShipTemplate_C" or the like. ***UWorld*** manages information related to the current level, lists of local players, etc. But most importantly there exists a pointer to a ***ULevel*** object know as "PersistentLevel" that references a list of all ***AActor***'s in the game world. Within each ***AActor*** is an ID that can be used in conjunction with ***GNames*** to identify what exactly each "actor" is.
-
 From here we use the structure of ***AActor*** to divulge even more information:
 
     struct actor {
@@ -26,11 +31,7 @@ From here we use the structure of ***AActor*** to divulge even more information:
         static std::optional<actor> from(const uintptr_t &process_handle, const uintptr_t &actor_address);
     }
 
-All ***AActor***'s have a reference to a "RootSceneComponent" that contains additional information related to actually rendering the ***AActor***. That's what the "component_*" variables are referencing and is of the type ***USceneComponent*** in the source.
-
-Process this information and then grab a reference to the "LocalPlayer" from ***UWorld***, which eventually leads you to the ***AActor*** of the local player and it's camera manager.
-
-Generate a 3x4 rotation matrix that represents the camera:
+All ***AActor***'s have a reference to a "RootSceneComponent" that contains additional information related to actually rendering the ***AActor***. That's what the "component_*" variables are referencing and is of the type ***USceneComponent*** in the source. Process this information and then grab a reference to the "LocalPlayer" from ***UWorld***, which eventually leads you to the ***AActor*** of the local player and it's camera manager. Generate a 3x4 rotation matrix that represents the camera:
 
 	void update_local_player_camera_rotation_matrix() {
 		auto pitch = glm::radians(local_player_camera_rotation.x);
@@ -52,7 +53,6 @@ Generate a 3x4 rotation matrix that represents the camera:
 		local_player_camera_rotation_matrix[2][2] = CR * CP;
 		local_player_camera_rotation_matrix[2][3] = 0.f;
 	}
-
 Then, project needed information onto the viewport for consumption:
 
 	/* Converts 3D world coordinates to 2D screen coordinates.
@@ -71,7 +71,6 @@ Then, project needed information onto the viewport for consumption:
 			(viewport.x * .5f) + screen_point.x * (viewport.x * .5f) / aspect_based_fov / screen_point.z,
 			(viewport.y * .5f) - screen_point.y * (viewport.x * .5f) / aspect_based_fov / screen_point.z
 		};
-
 All this information is obtained by jumping through a list of hand-tuned memory location offsets:
 
 	const uintptr_t world_owning_game_instance_offset = 0x1c0;
@@ -98,7 +97,5 @@ All this information is obtained by jumping through a list of hand-tuned memory 
 	const uintptr_t scene_component_relative_location_offset = 0x128;
 	const uintptr_t scene_component_relative_rotation_offset = 0x134;
 	const uintptr_t scene_component_velocity_offset = 0x22c;
-
 ### Building
-
 For your convenience; pre-built dependencies and a competent compiler can be found in my personal [development environment](https://gitlab.com/codegoose/devutil).
