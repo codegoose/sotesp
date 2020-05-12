@@ -2,7 +2,8 @@
 This is an external hack, or cheat for Sea of Thieves that enables the player to see treasures, enemies,
 
 ### Screenshots
-<img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview.jpg" />
+<img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-2.jpg" />
+<img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-1.jpg" />
 Some UI screencaps can be found [here](https://imgur.com/a/9C1Ayn3).
 
 ### Status
