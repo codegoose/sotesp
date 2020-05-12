@@ -4,10 +4,6 @@
 ### Examples
 
 <p float="left">
-  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/ui-1.gif" width="800" /> 
-  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/ui-2.gif" width="480" />
-</p>
-<p float="left">
   <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-0.png" width="400" />
   <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-1.png" width="400" /> 
   <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-5.png" width="500" />
