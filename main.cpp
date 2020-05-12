@@ -180,7 +180,9 @@ namespace engine {
 			std::vector<uintptr_t> list;
 			list.resize(working.size);
 			if (!cg::mem::read(process_handle, working.data_address, sizeof(uintptr_t) * list.size(), list.data())) return;
-			for (auto &pointer_value : list) per_index_callback(pointer_value);
+			for (auto &pointer_value : list)
+				if (pointer_value) // Null entries are possible so exclude them
+					per_index_callback(pointer_value);
 		}
 	};
 
@@ -203,12 +205,14 @@ namespace engine {
 			if (!cg::mem::read(process_handle, actor_address + actor_rotation_offset, result.rotation)) return std::nullopt;
 			if (!cg::mem::read(process_handle, actor_address + actor_linear_velocity_offset, result.linear_velocity)) return std::nullopt;
 			if (!cg::mem::read(process_handle, actor_address + actor_angular_velocity_offset, result.angular_velocity)) return std::nullopt;
-			if (!cg::mem::read(process_handle, result.component_address + scene_component_bounds_origin_offset, result.component_bounds_origin)) return std::nullopt;
-			if (!cg::mem::read(process_handle, result.component_address + scene_component_bounds_extent_offset, result.component_bounds_extent)) return std::nullopt;
-			if (!cg::mem::read(process_handle, result.component_address + scene_component_bounds_radius_offset, result.component_bounds_radius)) return std::nullopt;
-			if (!cg::mem::read(process_handle, result.component_address + scene_component_relative_location_offset, result.component_relative_location)) return std::nullopt;
-			if (!cg::mem::read(process_handle, result.component_address + scene_component_relative_rotation_offset, result.component_relative_rotation)) return std::nullopt;
-			if (!cg::mem::read(process_handle, result.component_address + scene_component_velocity_offset, result.component_velocity)) return std::nullopt;
+			if (result.component_address) { // Can be null on service actors.
+				if (!cg::mem::read(process_handle, result.component_address + scene_component_bounds_origin_offset, result.component_bounds_origin)) return std::nullopt;
+				if (!cg::mem::read(process_handle, result.component_address + scene_component_bounds_extent_offset, result.component_bounds_extent)) return std::nullopt;
+				if (!cg::mem::read(process_handle, result.component_address + scene_component_bounds_radius_offset, result.component_bounds_radius)) return std::nullopt;
+				if (!cg::mem::read(process_handle, result.component_address + scene_component_relative_location_offset, result.component_relative_location)) return std::nullopt;
+				if (!cg::mem::read(process_handle, result.component_address + scene_component_relative_rotation_offset, result.component_relative_rotation)) return std::nullopt;
+				if (!cg::mem::read(process_handle, result.component_address + scene_component_velocity_offset, result.component_velocity)) return std::nullopt;
+			}
 			return std::move(result);
 		}
 	};
@@ -700,6 +704,8 @@ int main(int, char **) {
 		engine::enumerate_actors(handle.vmread_query, [&](const uintptr_t &address, const int32_t &id, const std::string_view &name) {
 			if (address == engine::local_player_actor_address) return;
 			if (actor_render_group_cache.find(name.data()) == actor_render_group_cache.end()) return;
+			auto actor = engine::actor::from(handle.vmread_query, address);
+			if (!actor || !actor->component_address) return; // Skip if there's no scene component.
 			for (auto &render_group : actor_render_group_cache[name.data()]) {
 				auto settings = tools::settings["render_groups"][render_group];
 				bool draw_name = settings.contains("draw_name") ? static_cast<bool>(settings["draw_name"]) : false;
@@ -721,8 +727,6 @@ int main(int, char **) {
 					misc_color[2] = static_cast<float>(settings["misc_color"]["b"]) * 255;
 					misc_color[3] = static_cast<float>(settings["misc_color"]["a"]) * 255;
 				}
-				auto actor = engine::actor::from(handle.vmread_query, address);
-				if (!actor) return;
 				float human_readable_distance = glm::distance(actor->component_bounds_origin, engine::local_player_camera_location) * 0.01f;
 				if (draw_origin && human_readable_distance < 500) {
 					glm::vec2 p[] = {
