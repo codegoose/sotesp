@@ -1,14 +1,16 @@
 # SOTESP
-This is an external hack, or cheat for Sea of Thieves that enables the player to see treasures, enemies,
+This is an external hack, or cheat for Sea of Thieves that enables the player to see treasures, enemies, ships, other players and whatever else through walls and from great distances. A user interface is included that is used to manage render properties of in-game actors as well as to provide an easy-to-observe list of all in-game actors.
 
 ### Screenshots
 <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-2.jpg" />
 <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-1.jpg" />
 Some UI screencaps can be found [here](https://imgur.com/a/9C1Ayn3).
 
-### Status
-As far as I've experienced this is undetected. At the time of writing this, Sea of Thieves doesn't have any official anti-cheat software to worry about. Additionally, just due to the fact that is functions via a transparent overlay window, the hack is not be visible when streaming the game.
 ### How's this work?
+Basically, this software runs alongside the game and utilizes ```ReadProcessMemory``` from the Windows API to grab and read memory from the target process. It then walks the underlying Unreal Engine 4 architecture within the game to locate game objects and then uses a world to screen routine to highlight objects of interest within the players view.
+
+***This is against the games TOS and you could be banned for using this*** but as far as I've experienced this is undetected. At the time of writing this, Sea of Thieves doesn't have any official anti-cheat software. Additionally, just due to the fact that is functions via a transparent overlay window, the hack is not be visible when streaming the game. ***This hack is completely external and does not write to, or inject code into the target process.*** It strictly only reads memory.
+
 Primarily based off of Unreal Engine 4.10.1 source code; commited memory pages in the "SoTGame.exe" module of the target process are scanned for static pointers to two UE4 TArray objects: ***GNames*** is a structure which is used to map ID codes of in-game objects to human-readable names like "BP_SmallShipTemplate_C" or the like. ***UWorld*** manages information related to the current level, lists of local players, etc. But most importantly there exists a pointer to a ***ULevel*** object know as "PersistentLevel" that references a list of all ***AActor***'s in the game world. Within each ***AActor*** is an ID that can be used in conjunction with ***GNames*** to identify what exactly each "actor" is.
 From here we use the structure of ***AActor*** to divulge even more information:
 ```c++
