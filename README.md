@@ -1,13 +1,9 @@
 # SOTESP
-> The acronym commonly used when describing "ESP hacks" stands for Extra Sensory Perception. Basically psychic perception or the ability to know things that are otherwise unknowable. In relation to the hack its basically a cheat overlay that lets you know the locations of, or see every player in the game whether there are walls or terrain in the way or whatever. Its not an aimbot but knowing where a player will be and when gives you a borderline supernatural edge in combat, thus calling it "ESP". 
+This is an external hack, or cheat for Sea of Thieves that enables the player to see treasures, enemies,
 
-### Examples
-
-<p float="left">
-  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-0.png" width="400" />
-  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-1.png" width="400" /> 
-  <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/sot-hack-5.png" width="500" />
-</p>
+### Screenshots
+<img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview.jpg" />
+Some UI screencaps can be found [here](https://imgur.com/a/9C1Ayn3).
 
 ### Status
 As far as I've experienced this is undetected. At the time of writing this, Sea of Thieves doesn't have any official anti-cheat software to worry about. Additionally, just due to the fact that is functions via a transparent overlay window, the hack is not be visible when streaming the game.
