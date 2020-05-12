@@ -778,10 +778,6 @@ int main(int, char **) {
 						}
 						if (draw_name) engine::background->AddText({ max.x + border_thickness + 4, min.y + ((max.y - min.y) * .5f) - 7.f }, IM_COL32(text_color[0], text_color[1], text_color[2], text_color[3]), format("{} [{:.{}f}]", name, human_readable_distance, 1).c_str(), 0);
 					}
-				} else if (draw_name) {
-					auto top_2d = engine::project(actor->component_bounds_origin + glm::vec3(0, 0, actor->component_bounds_extent.z * .5f));
-					engine::background->AddText({ top_2d.x, top_2d.y }, IM_COL32(text_color[0], text_color[1], text_color[2], text_color[3]), format("{} [{:.{}f}]", name, human_readable_distance, 1).c_str(), 0);
-				}
 			}
 		});
 
