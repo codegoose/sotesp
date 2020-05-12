@@ -50,8 +50,8 @@ namespace engine {
 	const uintptr_t camera_manager_pitch_offset = 0x49c;
 	const uintptr_t camera_manager_fov_offset = 0x4b8;
 	const uintptr_t scene_component_bounds_origin_offset = 0x100;
-	const uintptr_t scene_component_bounds_extent_offset = 0x110;
-	const uintptr_t scene_component_bounds_radius_offset = 0x10c;
+	const uintptr_t scene_component_bounds_extent_offset = 0x10c;
+	const uintptr_t scene_component_bounds_radius_offset = 0x118;
 	const uintptr_t scene_component_relative_location_offset = 0x128;
 	const uintptr_t scene_component_relative_rotation_offset = 0x134;
 	const uintptr_t scene_component_velocity_offset = 0x22c;
@@ -728,11 +728,11 @@ int main(int, char **) {
 				if (draw_origin && human_readable_distance < 500) {
 					glm::vec2 p[] = {
 						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x + 10, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
+						engine::project({ actor->component_bounds_origin.x + actor->component_bounds_extent.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
 						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y + 10, actor->component_bounds_origin.z }),
+						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y + actor->component_bounds_extent.y, actor->component_bounds_origin.z }),
 						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z + 10 })
+						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z + actor->component_bounds_extent.z })
 					};
 					engine::background->AddLine({ p[0].x, p[0].y }, { p[1].x, p[1].y }, IM_COL32(255, 0, 0, 255), 2);
 					engine::background->AddLine({ p[2].x, p[2].y }, { p[3].x, p[3].y }, IM_COL32(0, 255, 0, 255), 2);
@@ -740,16 +740,15 @@ int main(int, char **) {
 				}
 				if (glm::distance(engine::local_player_camera_location, actor->component_bounds_origin) > actor->component_bounds_radius) {
 					if (draw_extents) {
-						auto rotation_transform = glm::rotate(glm::mat4(1.f), glm::radians(-actor->component_relative_rotation.y), glm::vec3(0.f, 0.f, 1.f));
 						glm::vec2 p[] = {
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z, 1.f) * rotation_transform)),
-							engine::project(actor->component_bounds_origin + glm::vec3(glm::vec4(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z, 1.f) * rotation_transform)),
+							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
 						};
 						glm::vec2 min = p[0], max = p[0];
 						for (auto &point : p) {
