@@ -723,7 +723,6 @@ int main(int, char **) {
 				}
 				auto actor = engine::actor::from(handle.vmread_query, address);
 				if (!actor) return;
-				auto place = engine::project(actor->component_bounds_origin);
 				float human_readable_distance = glm::distance(actor->component_bounds_origin, engine::local_player_camera_location) * 0.01f;
 				if (draw_origin && human_readable_distance < 500) {
 					glm::vec2 p[] = {
