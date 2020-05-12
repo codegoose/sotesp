@@ -21,7 +21,10 @@
 				"BP_Treasure_Artifact_Proxy_DVR_Mythical_C",
 				"BP_Treasure_Artifact_Proxy_impressive_02_a_C",
 				"BP_SunkenCurseArtefact_Emerald_C",
-				"BP_AshenKey_Proxy_C"
+				"BP_AshenKey_Proxy_C",
+				"BP_Treasure_Artifact_Proxy_impressive_03_a_C",
+				"BP_Treasure_Artifact_Proxy_impressive_01_a_C",
+				"BP_SunkenCurseArtefact_Ruby_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
@@ -58,7 +61,9 @@
 				"BP_TreasureChest_Proxy_Rare_Rome_C",
 				"BP_ShipwreckTreasureChest_Proxy_Legendary_C",
 				"BP_TreasureChest_Proxy_ChestOfRage_C",
-				"BP_TreasureChest_Proxy_Common_C"
+				"BP_TreasureChest_Proxy_Common_C",
+				"BP_TreasureChest_Proxy_Legendary_C",
+				"BP_TreasureChest_Proxy_Drunken_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
@@ -82,7 +87,9 @@
 			"members": [
 				"BP_CollectorsChest_Proxy_C",
 				"BP_AshenChestCollectorsChest_Proxy_C",
-				"BP_MerchantCrate_AnyItemCrate_Proxy_C"
+				"BP_MerchantCrate_AnyItemCrate_Proxy_C",
+				"BP_MessageInABottleProxy_C",
+				"BP_MerchantCrate_CannonballCrateProxy_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
@@ -115,7 +122,8 @@
 				"BP_MerchantCrate_Commodity_VolcanicStone_Proxy_C",
 				"BP_MerchantCrate_BananaCrateProxy_C",
 				"BP_MerchantCrate_PigCrateProxy_C",
-				"BP_MerchantCrate_Commodity_Minerals_Proxy_C"
+				"BP_MerchantCrate_Commodity_Minerals_Proxy_C",
+				"BP_PortableAmmoCrate_Proxy_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
@@ -147,7 +155,8 @@
 				"BP_fod_SnakeMeatBurned_00_a_ItemProxy_C",
 				"BP_fod_SnakeMeatRaw_00_a_ItemProxy_C",
 				"BP_fod_EarthwormsFresh_00_a_ItemProxy_C",
-				"BP_fod_LeechesFresh_00_a_ItemProxy_C"
+				"BP_fod_LeechesFresh_00_a_ItemProxy_C",
+				"BP_fod_PineappleFresh_00_a_ItemProxy_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
@@ -223,7 +232,7 @@
 				"BP_MediumShipNetProxy_C",
 				"BP_SmallShipNetProxy_C",
 				"BP_LargeShipNetProxy_C",
-				"BP_Goldhoarder_Humphrey_C"
+				"BP_Kraken_C"
 			],
 			"misc_color": {
 				"a": 0.8627451062202454,
@@ -270,12 +279,15 @@
 		"Misc": {
 			"border_thickness": 2,
 			"draw_extents": true,
-			"draw_name": false,
+			"draw_name": true,
 			"draw_origin": false,
 			"members": [
-				"BP_PortableAmmoCrate_Proxy_C",
 				"BP_Rowboat_C",
-				"BP_Rowboat_WithFrontHarpoon_C"
+				"BP_Rowboat_WithFrontHarpoon_C",
+				"BP_gmp_repair_wood_02_a_Proxy_C",
+				"BP_PlayerPirate_Tavern_C",
+				"BP_PlayerPirate_Ghost_C",
+				"BP_BuoyantStorageBarrel_LockedToWater_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
@@ -313,10 +325,7 @@
 		},
 		"Quest": {
 			"draw_name": false,
-			"members": [
-				"BP_SkeletonKey_Proxy_C",
-				"BP_CollectorsChest_TempCursedRogue_Proxy_C"
-			]
+			"members": []
 		},
 		"Shipwreck": {
 			"border_thickness": 2,
@@ -353,7 +362,8 @@
 				"BP_BountyRewardSkull_Proxy_Fort_C",
 				"BP_BountyRewardSkull_Proxy_Mythical_DVR_C",
 				"BP_BountyRewardSkull_Proxy_Common_DVR_C",
-				"BP_BountyRewardSkull_Proxy_Legendary_DVR_C"
+				"BP_BountyRewardSkull_Proxy_Legendary_DVR_C",
+				"BP_BountyRewardSkull_Proxy_Common_C"
 			],
 			"misc_color": {
 				"a": 0.501960813999176,
