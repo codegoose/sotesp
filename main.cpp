@@ -439,161 +439,162 @@ namespace tools {
 		}
 	}
 
-	// Extra messy. Needs clean up.
-	void render_actor_explorer() {
-		// ImGui::ShowDemoWindow();
+	void render_actor_explorer_actor_list() {
 		static char name_filter[128] = { 0 };
-		static char new_group_name[128] = { 0 };
-		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
-		if (ImGui::Begin("Actor Explorer")) {
-			ImGui::BeginTabBar("Tabs");
-			if (ImGui::BeginTabItem("Global Actor List")) {
-				ImGui::Text(format("{} actors in cache.", engine::actor_id_cache.size()).c_str());
-				ImGui::Checkbox("Expose All Actors", &force_debug_draw_on_all_actors);
-				ImGui::InputTextWithHint("Filter", "Name", name_filter, sizeof(name_filter), ImGuiInputTextFlags_EnterReturnsTrue);
-				ImGui::BeginChild("actor_list", { }, true);
-				for (auto actor : engine::actor_id_cache) {
-					if (name_filter) {
-						if (actor.second.find(name_filter) == std::string::npos) continue;
+		if (ImGui::BeginTabItem("Global Actor List")) {
+			ImGui::Text(format("{} actors in cache.", engine::actor_id_cache.size()).c_str());
+			ImGui::Checkbox("Expose All Actors", &force_debug_draw_on_all_actors);
+			ImGui::InputTextWithHint("Filter", "Name", name_filter, sizeof(name_filter), ImGuiInputTextFlags_EnterReturnsTrue);
+			ImGui::BeginChild("actor_list", { }, true);
+			for (auto actor : engine::actor_id_cache) {
+				if (name_filter) {
+					if (actor.second.find(name_filter) == std::string::npos) continue;
+				}
+				std::vector<std::string> in_groups;
+				std::string in_groups_summary;
+				for (auto i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++)
+					for (std::string member_name : i.value()["members"])
+						if (member_name == actor.second) {
+							in_groups.push_back(i.key());
+							in_groups_summary += "[" + i.key() + "] ";
+						}
+				ImGui::PushItemWidth(200);
+				if (ImGui::BeginCombo(format("{} ({})", actor.second, actor.first).c_str(), in_groups_summary.c_str())) {
+					int uid = 0;
+					for (auto i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++) {
+						if (std::find(in_groups.begin(), in_groups.end(), i.key()) == in_groups.end()) {
+							if (ImGui::Selectable(format("Add to \"{}\"##{}", i.key(), uid).c_str())) {
+								i.value()["members"].push_back(actor.second);
+							}
+							uid++;
+						} else {
+							if (ImGui::Selectable(format("Remove from \"{}\"##{}", i.key(), uid).c_str())) {
+								std::vector<std::string> members = i.value()["members"];
+								members.erase(std::find(members.begin(), members.end(), actor.second));
+								i.value()["members"] = members;
+							}
+							uid++;
+						}
 					}
+					ImGui::EndCombo();
+				}
+				ImGui::PopItemWidth();
+			}
+			ImGui::EndChild();
+			ImGui::EndTabItem();
+		}
+	}
+
+	void render_actor_explorer_render_groups() {
+		static char new_group_name[128] = { 0 };
+		static std::string selected_group_name;
+		if (ImGui::BeginTabItem("Render Groups")) {
+			if (ImGui::InputTextWithHint("Create New Group", "Group Name", new_group_name, sizeof(new_group_name), ImGuiInputTextFlags_EnterReturnsTrue)) {
+				if (new_group_name[0] && std::find(settings["render_groups"].begin(), settings["render_groups"].end(), new_group_name) == settings["render_groups"].end()) {
+					settings["render_groups"][new_group_name] = { };
+					memset(new_group_name, 0, sizeof(new_group_name));
+				}
+			}
+			ImGui::BeginChild("List", { 200, 0 }, true);
+			if (settings["render_groups"].size())
+				for (nlohmann::json::iterator i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++)
+					if (ImGui::Selectable(i.key().c_str(), selected_group_name != "" && i.key() == selected_group_name)) selected_group_name = i.key();
+			ImGui::EndChild();
+			ImGui::SameLine();
+			ImGui::BeginChild("Group Info", { }, true);
+			if (settings["render_groups"].contains(selected_group_name)) {
+				auto &selected_group = settings["render_groups"][selected_group_name];
+				float text_color[4] = { 1.f, 0.f, 0.f, 1.f };
+				float misc_color[4] = { 1.f, 0.f, 0.f, 1.f };
+				if (selected_group.contains("text_color")) {
+					text_color[0] = selected_group["text_color"].value("r", text_color[0]);
+					text_color[1] = selected_group["text_color"].value("g", text_color[1]);
+					text_color[2] = selected_group["text_color"].value("b", text_color[2]);
+					text_color[3] = selected_group["text_color"].value("a", text_color[3]);
+				}
+				if (selected_group.contains("misc_color")) {
+					misc_color[0] = selected_group["misc_color"].value("r", misc_color[0]);
+					misc_color[1] = selected_group["misc_color"].value("g", misc_color[1]);
+					misc_color[2] = selected_group["misc_color"].value("b", misc_color[2]);
+					misc_color[3] = selected_group["misc_color"].value("a", misc_color[3]);
+				}
+				ImGui::PushItemWidth(100);
+				if (ImGui::ColorPicker4("Text Color", text_color)) {
+					selected_group["text_color"] = {
+						{ "r", text_color[0] },
+						{ "g", text_color[1] },
+						{ "b", text_color[2] },
+						{ "a", text_color[3] }
+					};
+				}
+				ImGui::SameLine();
+				if (ImGui::ColorPicker4("Misc Color", misc_color)) {
+					selected_group["misc_color"] = {
+						{ "r", misc_color[0] },
+						{ "g", misc_color[1] },
+						{ "b", misc_color[2] },
+						{ "a", misc_color[3] }
+					};
+				}
+				ImGui::PopItemWidth();
+				bool draw_name = selected_group.value("draw_name", false);
+				bool draw_origin = selected_group.value("draw_origin", false);
+				bool draw_extents = selected_group.value("draw_extents", false);
+				bool use_flat_extents = selected_group.value("use_flat_extents", false);
+				int border_thickness = selected_group.value("border_thickness", 1);
+				if (ImGui::Checkbox("Draw Name", &draw_name)) selected_group["draw_name"] = draw_name;
+				if (ImGui::Checkbox("Draw Origin", &draw_origin)) selected_group["draw_origin"] = draw_origin;
+				if (ImGui::Checkbox("Draw Extents", &draw_extents)) selected_group["draw_extents"] = draw_extents;
+				if (ImGui::Checkbox("Use Flat Extents", &use_flat_extents)) selected_group["use_flat_extents"] = use_flat_extents;
+				ImGui::PushItemWidth(120);
+				if (ImGui::InputInt("Border Thickness", &border_thickness)) selected_group["border_thickness"] = border_thickness;
+				ImGui::PopItemWidth();
+				ImGui::Separator();
+				ImGui::BeginChild("Member List", { 0, 300 }, true);
+				ImGui::PushItemWidth(200);
+				for (const std::string_view &member : std::vector<std::string>(selected_group["members"].begin(), selected_group["members"].end())) {
 					std::vector<std::string> in_groups;
 					std::string in_groups_summary;
 					for (auto i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++)
 						for (std::string member_name : i.value()["members"])
-							if (member_name == actor.second) {
+							if (member_name == member) {
 								in_groups.push_back(i.key());
 								in_groups_summary += "[" + i.key() + "] ";
 							}
-					ImGui::PushItemWidth(200);
-					if (ImGui::BeginCombo(format("{} ({})", actor.second, actor.first).c_str(), in_groups_summary.c_str())) {
-						int uid = 0;
+					if (ImGui::BeginCombo(member.data(), in_groups_summary.c_str())) {
 						for (auto i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++) {
 							if (std::find(in_groups.begin(), in_groups.end(), i.key()) == in_groups.end()) {
-								if (ImGui::Selectable(format("Add to \"{}\"##{}", i.key(), uid).c_str())) {
-									i.value()["members"].push_back(actor.second);
-								}
-								uid++;
+								if (ImGui::Selectable(format("Add to \"{}\"", i.key()).c_str())) i.value()["members"].push_back(member);
 							} else {
-								if (ImGui::Selectable(format("Remove from \"{}\"##{}", i.key(), uid).c_str())) {
-									std::vector<std::string> members = i.value()["members"];
-									members.erase(std::find(members.begin(), members.end(), actor.second));
-									i.value()["members"] = members;
+								if (ImGui::Selectable(format("Remove from \"{}\"", i.key()).c_str())) {
+									std::vector<std::string> working_members = i.value()["members"];
+									working_members.erase(std::find(working_members.begin(), working_members.end(), member));
+									i.value()["members"] = working_members;
 								}
-								uid++;
 							}
 						}
 						ImGui::EndCombo();
 					}
-					ImGui::PopItemWidth();
 				}
+				ImGui::PopItemWidth();
 				ImGui::EndChild();
-				ImGui::EndTabItem();
-			}
-			if (ImGui::BeginTabItem("Render Groups")) {
-				if (ImGui::InputTextWithHint("Create New Group", "Group Name", new_group_name, sizeof(new_group_name), ImGuiInputTextFlags_EnterReturnsTrue)) {
-					if (new_group_name[0] && std::find(settings["render_groups"].begin(), settings["render_groups"].end(), new_group_name) == settings["render_groups"].end()) {
-						settings["render_groups"][new_group_name] = { };
-						memset(new_group_name, 0, sizeof(new_group_name));
-					}
+				ImGui::Separator();
+				if (ImGui::Button("Delete Group")) {
+					settings["render_groups"].erase(selected_group_name);
+					selected_group = "";
 				}
-				static std::string selected_group;
-				ImGui::BeginChild("List", { 200, 0 }, true);
-				if (settings["render_groups"].size()) {
-					for (nlohmann::json::iterator i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++) {
-						if (ImGui::Selectable(i.key().c_str(), selected_group != "" && i.key() == selected_group)) selected_group = i.key();
-					}
-				}
-				ImGui::EndChild();
-				ImGui::SameLine();
-				ImGui::BeginChild("Group Info", { }, true);
-				if (settings["render_groups"].contains(selected_group)) {
-					float text_color[4] = { 1.f, 0.f, 0.f, 1.f };
-					float misc_color[4] = { 1.f, 0.f, 0.f, 1.f };
-					if (settings["render_groups"][selected_group].contains("text_color")) {
-						text_color[0] = static_cast<float>(settings["render_groups"][selected_group]["text_color"]["r"]);
-						text_color[1] = static_cast<float>(settings["render_groups"][selected_group]["text_color"]["g"]);
-						text_color[2] = static_cast<float>(settings["render_groups"][selected_group]["text_color"]["b"]);
-						text_color[3] = static_cast<float>(settings["render_groups"][selected_group]["text_color"]["a"]);
-					}
-					if (settings["render_groups"][selected_group].contains("misc_color")) {
-						misc_color[0] = static_cast<float>(settings["render_groups"][selected_group]["misc_color"]["r"]);
-						misc_color[1] = static_cast<float>(settings["render_groups"][selected_group]["misc_color"]["g"]);
-						misc_color[2] = static_cast<float>(settings["render_groups"][selected_group]["misc_color"]["b"]);
-						misc_color[3] = static_cast<float>(settings["render_groups"][selected_group]["misc_color"]["a"]);
-					}
-					ImGui::PushItemWidth(100);
-					if (ImGui::ColorPicker4("Text Color", text_color)) {
-						settings["render_groups"][selected_group]["text_color"] = {
-							{ "r", text_color[0] },
-							{ "g", text_color[1] },
-							{ "b", text_color[2] },
-							{ "a", text_color[3] }
-						};
-					}
-					ImGui::SameLine();
-					if (ImGui::ColorPicker4("Misc Color", misc_color)) {
-						settings["render_groups"][selected_group]["misc_color"] = {
-							{ "r", misc_color[0] },
-							{ "g", misc_color[1] },
-							{ "b", misc_color[2] },
-							{ "a", misc_color[3] }
-						};
-					}
-					ImGui::PopItemWidth();
-					bool draw_name = settings["render_groups"][selected_group].contains("draw_name") ? static_cast<bool>(settings["render_groups"][selected_group]["draw_name"]) : false;
-					bool draw_origin = settings["render_groups"][selected_group].contains("draw_origin") ? static_cast<bool>(settings["render_groups"][selected_group]["draw_origin"]) : false;
-					bool draw_extents = settings["render_groups"][selected_group].contains("draw_extents") ? static_cast<bool>(settings["render_groups"][selected_group]["draw_extents"]) : false;
-					bool use_flat_extents = settings["render_groups"][selected_group].contains("use_flat_extents") ? static_cast<bool>(settings["render_groups"][selected_group]["use_flat_extents"]) : false;
-					int border_thickness = settings["render_groups"][selected_group].contains("border_thickness") ? static_cast<int>(settings["render_groups"][selected_group]["border_thickness"]) : 1;
-					if (ImGui::Checkbox("Draw Name", &draw_name)) settings["render_groups"][selected_group]["draw_name"] = draw_name;
-					if (ImGui::Checkbox("Draw Origin", &draw_origin)) settings["render_groups"][selected_group]["draw_origin"] = draw_origin;
-					if (ImGui::Checkbox("Draw Extents", &draw_extents)) settings["render_groups"][selected_group]["draw_extents"] = draw_extents;
-					if (ImGui::Checkbox("Use Flat Extents", &use_flat_extents)) settings["render_groups"][selected_group]["use_flat_extents"] = use_flat_extents;
-					ImGui::PushItemWidth(120);
-					if (ImGui::InputInt("Border Thickness", &border_thickness)) settings["render_groups"][selected_group]["border_thickness"] = border_thickness;
-					ImGui::PopItemWidth();
-					ImGui::Separator();
-					ImGui::BeginChild("Member List", { 0, 300 }, true);
-					ImGui::PushItemWidth(200);
-					/* Add & remove members from this group.
-					We're making a copy here because iterating over a vector while you're
-					adding and removing things from it is a bad idea. */
-					std::vector<std::string> copy_of_members = settings["render_groups"][selected_group]["members"];
-					for (const std::string_view &member : copy_of_members) {
-						std::vector<std::string> in_groups;
-						std::string in_groups_summary;
-						for (auto i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++)
-							for (std::string member_name : i.value()["members"])
-								if (member_name == member) {
-									in_groups.push_back(i.key());
-									in_groups_summary += "[" + i.key() + "] ";
-								}
-						if (ImGui::BeginCombo(member.data(), in_groups_summary.c_str())) {
-							for (auto i = settings["render_groups"].begin(); i != settings["render_groups"].end(); i++) {
-								if (std::find(in_groups.begin(), in_groups.end(), i.key()) == in_groups.end()) {
-									if (ImGui::Selectable(format("Add to \"{}\"", i.key()).c_str())) i.value()["members"].push_back(member);
-								} else {
-									if (ImGui::Selectable(format("Remove from \"{}\"", i.key()).c_str())) {
-										std::vector<std::string> working_members = i.value()["members"];
-										working_members.erase(std::find(working_members.begin(), working_members.end(), member));
-										i.value()["members"] = working_members;
-									}
-								}
-							}
-							ImGui::EndCombo();
-						}
-					}
-					ImGui::PopItemWidth();
-					ImGui::EndChild();
-					ImGui::Separator();
-					if (ImGui::Button("Delete Group")) {
-						settings["render_groups"].erase(selected_group);
-						selected_group = "";
-					}
-				} else ImGui::Text("Select a group or make a new one.");
-				ImGui::EndChild();
-				ImGui::EndTabItem();
-			}
+			} else ImGui::Text("Select a group or make a new one.");
+			ImGui::EndChild();
+			ImGui::EndTabItem();
+		}
+	}
+
+	void render_actor_explorer() {
+		ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+		if (ImGui::Begin("Actor Explorer")) {
+			ImGui::BeginTabBar("Tabs");
+			render_actor_explorer_actor_list();
+			render_actor_explorer_render_groups();
 			ImGui::EndTabBar();
 		}
 		ImGui::End();
@@ -706,25 +707,25 @@ int main(int, char **) {
 			auto actor = engine::actor::from(handle.vmread_query, address);
 			if (!actor || !actor->component_address) return; // Skip if there's no scene component.
 			for (auto &render_group : actor_render_group_cache[name.data()]) {
-				auto settings = tools::settings["render_groups"][render_group];
-				bool draw_name = settings.contains("draw_name") ? static_cast<bool>(settings["draw_name"]) : false;
-				bool draw_origin = settings.contains("draw_origin") ? static_cast<bool>(settings["draw_origin"]) : false;
-				bool draw_extents = settings.contains("draw_extents") ? static_cast<bool>(settings["draw_extents"]) : false;
-				bool use_flat_extents = settings.contains("use_flat_extents") ? static_cast<bool>(settings["use_flat_extents"]) : false;
-				int border_thickness = settings.contains("border_thickness") ? static_cast<int>(settings["border_thickness"]) : 1;
+				auto &settings = tools::settings["render_groups"][render_group];
+				bool draw_name = settings.value("draw_name", false);
+				bool draw_origin = settings.value("draw_origin", false);
+				bool draw_extents = settings.value("draw_extents", false);
+				bool use_flat_extents = settings.value("use_flat_extents", false);
+				int border_thickness = settings.value("border_thickness", 1);
 				int text_color[4] = { 255, 0, 0, 255 };
 				int misc_color[4] = { 255, 0, 0, 255 };
 				if (settings.contains("text_color")) {
-					text_color[0] = static_cast<float>(settings["text_color"]["r"]) * 255;
-					text_color[1] = static_cast<float>(settings["text_color"]["g"]) * 255;
-					text_color[2] = static_cast<float>(settings["text_color"]["b"]) * 255;
-					text_color[3] = static_cast<float>(settings["text_color"]["a"]) * 255;
+					text_color[0] = settings["text_color"].value("r", 1.f) * 255;
+					text_color[1] = settings["text_color"].value("g", 0.f) * 255;
+					text_color[2] = settings["text_color"].value("b", 0.f) * 255;
+					text_color[3] = settings["text_color"].value("a", 1.f) * 255;
 				}
 				if (settings.contains("misc_color")) {
-					misc_color[0] = static_cast<float>(settings["misc_color"]["r"]) * 255;
-					misc_color[1] = static_cast<float>(settings["misc_color"]["g"]) * 255;
-					misc_color[2] = static_cast<float>(settings["misc_color"]["b"]) * 255;
-					misc_color[3] = static_cast<float>(settings["misc_color"]["a"]) * 255;
+					misc_color[0] = settings["misc_color"].value("r", 1.f) * 255;
+					misc_color[1] = settings["misc_color"].value("g", 0.f) * 255;
+					misc_color[2] = settings["misc_color"].value("b", 0.f) * 255;
+					misc_color[3] = settings["misc_color"].value("a", 1.f) * 255;
 				}
 				float human_readable_distance = glm::distance(actor->component_bounds_origin, engine::local_player_camera_location) * 0.01f;
 				if (draw_origin && human_readable_distance < 500) {
