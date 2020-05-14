@@ -109,16 +109,15 @@ namespace engine {
 			if (signatures_to_find == signatures.end()) return;
 			size_t num_read;
 			if (region_data_buffer.size() < region_size) region_data_buffer.resize(region_size);
-			if (ReadProcessMemory(reinterpret_cast<void *>(process_handle), reinterpret_cast<void *>(region_base), region_data_buffer.data(), region_size, &num_read)) {
-				for (std::map<std::string, signature>::iterator i = signatures.begin(); i != signatures.end(); i++) {
-					auto &signature = signatures[i->first];
-					if (signature.remote_location) continue;
-					for (size_t region_byte_index = 0; region_byte_index < num_read - signature.num_bytes; region_byte_index++) {
-						if (cg::sig::match(signature.pattern, &region_data_buffer[region_byte_index], signature.num_bytes)) {
-							signature.remote_location = cg::mem::load_effective_address(process_handle, reinterpret_cast<uintptr_t>(region_base) + region_byte_index);
-							cout << "Found " << fg::green <<  i->first << fg::reset << " signature at " << fg::yellow << reinterpret_cast<void *>(signature.remote_location) << fg::reset << endl;
-							break;
-						}
+			if (ReadProcessMemory(reinterpret_cast<void *>(process_handle), reinterpret_cast<void *>(region_base), region_data_buffer.data(), region_size, &num_read));
+			for (std::map<std::string, signature>::iterator i = signatures.begin(); i != signatures.end(); i++) {
+				auto &signature = signatures[i->first];
+				if (signature.remote_location) continue;
+				for (size_t region_byte_index = 0; region_byte_index < num_read - signature.num_bytes; region_byte_index++) {
+					if (cg::sig::match(signature.pattern, &region_data_buffer[region_byte_index], signature.num_bytes)) {
+						signature.remote_location = cg::mem::load_effective_address(process_handle, reinterpret_cast<uintptr_t>(region_base) + region_byte_index);
+						cout << "Found " << fg::green <<  i->first << fg::reset << " signature at " << fg::yellow << reinterpret_cast<void *>(signature.remote_location) << fg::reset << endl;
+						break;
 					}
 				}
 			}
