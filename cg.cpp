@@ -149,6 +149,7 @@ std::optional<std::vector<char>> cg::curl::get(const std::string_view &url) {
 */
 
 bool cg::sig::match(const std::string_view &signature, const char *buffer, const size_t &buffer_size) {
+	if (!buffer_size) return false;
 	size_t signature_index = 0, buffer_index = 0;
 	for (;;) {
 		if (signature_index + 2 > signature.size()) return false;
