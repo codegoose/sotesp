@@ -109,7 +109,7 @@ namespace engine {
 			if (signatures_to_find == signatures.end()) return;
 			size_t num_read;
 			if (region_data_buffer.size() < region_size) region_data_buffer.resize(region_size);
-			if (ReadProcessMemory(reinterpret_cast<void *>(process_handle), reinterpret_cast<void *>(region_base), region_data_buffer.data(), region_size, &num_read));
+			if (!ReadProcessMemory(reinterpret_cast<void *>(process_handle), reinterpret_cast<void *>(region_base), region_data_buffer.data(), region_size, &num_read)) return;
 			for (std::map<std::string, signature>::iterator i = signatures.begin(); i != signatures.end(); i++) {
 				auto &signature = signatures[i->first];
 				if (signature.remote_location) continue;
