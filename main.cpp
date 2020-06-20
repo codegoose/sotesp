@@ -676,7 +676,12 @@ int main(int, char **) {
 	QueryPerformanceFrequency(&frequency);
 	QueryPerformanceCounter(&frame_start_time);
 
-	while (cg::esp::poll("Sea of Thieves")) {
+	for (;;) {
+
+		if (!cg::esp::poll("Sea of Thieves")) {
+			std::cout << "Error probing game window." << std::endl;
+			break;
+		}
 
 		/* Keep trying to get good addresses until there are no errors.
 		We're basically dealing with race conditions constantly since this hack is external.*/
