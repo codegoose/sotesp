@@ -686,8 +686,6 @@ int main(int, char **) {
 		/* Keep trying to get good addresses until there are no errors.
 		We're basically dealing with race conditions constantly since this hack is external.*/
 
-		while (update_addresses(handle.vmread_query, engine::signatures()["UWorld"], engine::signatures()["GNames"]));
-
 		begin_frame();
 
 		/* glm::vec4 look(10.f, 0.f, 0.f, 0.f);
@@ -699,94 +697,99 @@ int main(int, char **) {
 		some actor way faster than searching all of them per actor. We can just do a quick lookup.
 		Before this optimization, enumerate_actors was taking upwards of 12 ms.*/
 
-		static std::unordered_map<std::string, std::vector<std::string>> actor_render_group_cache;
+		if (engine::signatures()["UWorld"].remote_location) {
 
-		actor_render_group_cache.clear();
+			while (update_addresses(handle.vmread_query, engine::signatures()["UWorld"], engine::signatures()["GNames"]));
 
-		for (auto i = tools::settings["render_groups"].begin(); i != tools::settings["render_groups"].end(); i++)
-			for (std::string member_name : i.value()["members"])
-				actor_render_group_cache[member_name].push_back(i.key());
+			static std::unordered_map<std::string, std::vector<std::string>> actor_render_group_cache;
 
-		engine::enumerate_actors(handle.vmread_query, [&](const uintptr_t &address, const int32_t &id, const std::string_view &name) {
-			if (address == engine::local_player_actor_address) return;
-			if (actor_render_group_cache.find(name.data()) == actor_render_group_cache.end()) return;
-			auto actor = engine::actor::from(handle.vmread_query, address);
-			if (!actor || !actor->component_address) return; // Skip if there's no scene component.
-			for (auto &render_group : actor_render_group_cache[name.data()]) {
-				auto &settings = tools::settings["render_groups"][render_group];
-				bool draw_name = settings.value("draw_name", false);
-				bool draw_origin = settings.value("draw_origin", false);
-				bool draw_extents = settings.value("draw_extents", false);
-				bool use_flat_extents = settings.value("use_flat_extents", false);
-				int border_thickness = settings.value("border_thickness", 1);
-				int text_color[4] = { 255, 0, 0, 255 };
-				int misc_color[4] = { 255, 0, 0, 255 };
-				if (settings.contains("text_color")) {
-					text_color[0] = settings["text_color"].value("r", 1.f) * 255;
-					text_color[1] = settings["text_color"].value("g", 0.f) * 255;
-					text_color[2] = settings["text_color"].value("b", 0.f) * 255;
-					text_color[3] = settings["text_color"].value("a", 1.f) * 255;
-				}
-				if (settings.contains("misc_color")) {
-					misc_color[0] = settings["misc_color"].value("r", 1.f) * 255;
-					misc_color[1] = settings["misc_color"].value("g", 0.f) * 255;
-					misc_color[2] = settings["misc_color"].value("b", 0.f) * 255;
-					misc_color[3] = settings["misc_color"].value("a", 1.f) * 255;
-				}
-				float human_readable_distance = glm::distance(actor->component_bounds_origin, engine::local_player_camera_location) * 0.01f;
-				if (draw_origin && human_readable_distance < 500) {
-					glm::vec2 p[] = {
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x + actor->component_bounds_extent.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y + actor->component_bounds_extent.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
-						engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z + actor->component_bounds_extent.z })
-					};
-					engine::background->AddLine({ p[0].x, p[0].y }, { p[1].x, p[1].y }, IM_COL32(255, 0, 0, 255), 2);
-					engine::background->AddLine({ p[2].x, p[2].y }, { p[3].x, p[3].y }, IM_COL32(0, 255, 0, 255), 2);
-					engine::background->AddLine({ p[4].x, p[4].y }, { p[5].x, p[5].y }, IM_COL32(0, 0, 255, 255), 2);
-				}
-				if (glm::distance(engine::local_player_camera_location, actor->component_bounds_origin) > actor->component_bounds_radius) {
-					if (draw_extents) {
+			actor_render_group_cache.clear();
+
+			for (auto i = tools::settings["render_groups"].begin(); i != tools::settings["render_groups"].end(); i++)
+				for (std::string member_name : i.value()["members"])
+					actor_render_group_cache[member_name].push_back(i.key());
+
+			engine::enumerate_actors(handle.vmread_query, [&](const uintptr_t &address, const int32_t &id, const std::string_view &name) {
+				if (address == engine::local_player_actor_address) return;
+				if (actor_render_group_cache.find(name.data()) == actor_render_group_cache.end()) return;
+				auto actor = engine::actor::from(handle.vmread_query, address);
+				if (!actor || !actor->component_address) return; // Skip if there's no scene component.
+				for (auto &render_group : actor_render_group_cache[name.data()]) {
+					auto &settings = tools::settings["render_groups"][render_group];
+					bool draw_name = settings.value("draw_name", false);
+					bool draw_origin = settings.value("draw_origin", false);
+					bool draw_extents = settings.value("draw_extents", false);
+					bool use_flat_extents = settings.value("use_flat_extents", false);
+					int border_thickness = settings.value("border_thickness", 1);
+					int text_color[4] = { 255, 0, 0, 255 };
+					int misc_color[4] = { 255, 0, 0, 255 };
+					if (settings.contains("text_color")) {
+						text_color[0] = settings["text_color"].value("r", 1.f) * 255;
+						text_color[1] = settings["text_color"].value("g", 0.f) * 255;
+						text_color[2] = settings["text_color"].value("b", 0.f) * 255;
+						text_color[3] = settings["text_color"].value("a", 1.f) * 255;
+					}
+					if (settings.contains("misc_color")) {
+						misc_color[0] = settings["misc_color"].value("r", 1.f) * 255;
+						misc_color[1] = settings["misc_color"].value("g", 0.f) * 255;
+						misc_color[2] = settings["misc_color"].value("b", 0.f) * 255;
+						misc_color[3] = settings["misc_color"].value("a", 1.f) * 255;
+					}
+					float human_readable_distance = glm::distance(actor->component_bounds_origin, engine::local_player_camera_location) * 0.01f;
+					if (draw_origin && human_readable_distance < 500) {
 						glm::vec2 p[] = {
-							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
-							engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+							engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
+							engine::project({ actor->component_bounds_origin.x + actor->component_bounds_extent.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
+							engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
+							engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y + actor->component_bounds_extent.y, actor->component_bounds_origin.z }),
+							engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z }),
+							engine::project({ actor->component_bounds_origin.x, actor->component_bounds_origin.y, actor->component_bounds_origin.z + actor->component_bounds_extent.z })
 						};
-						glm::vec2 min = p[0], max = p[0];
-						for (auto &point : p) {
-							if (point.x < min.x) min.x = point.x;
-							if (point.y < min.y) min.y = point.y;
-							if (point.x > max.x) max.x = point.x;
-							if (point.y > max.y) max.y = point.y;
+						engine::background->AddLine({ p[0].x, p[0].y }, { p[1].x, p[1].y }, IM_COL32(255, 0, 0, 255), 2);
+						engine::background->AddLine({ p[2].x, p[2].y }, { p[3].x, p[3].y }, IM_COL32(0, 255, 0, 255), 2);
+						engine::background->AddLine({ p[4].x, p[4].y }, { p[5].x, p[5].y }, IM_COL32(0, 0, 255, 255), 2);
+					}
+					if (glm::distance(engine::local_player_camera_location, actor->component_bounds_origin) > actor->component_bounds_radius) {
+						if (draw_extents) {
+							glm::vec2 p[] = {
+								engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, -actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+								engine::project(actor->component_bounds_origin + glm::vec3(-actor->component_bounds_extent.x, actor->component_bounds_extent.y, -actor->component_bounds_extent.z)),
+							};
+							glm::vec2 min = p[0], max = p[0];
+							for (auto &point : p) {
+								if (point.x < min.x) min.x = point.x;
+								if (point.y < min.y) min.y = point.y;
+								if (point.x > max.x) max.x = point.x;
+								if (point.y > max.y) max.y = point.y;
+							}
+							if (use_flat_extents) { // Summarize the extents into a basic rect shape instead of a 3D one.
+								engine::background->AddRect({ min.x, min.y }, { max.x, max.y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), 5, ImDrawCornerFlags_All, border_thickness);
+							} else {
+								engine::background->AddLine({ p[0].x, p[0].y }, { p[1].x, p[1].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[1].x, p[1].y }, { p[3].x, p[3].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[2].x, p[2].y }, { p[3].x, p[3].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[2].x, p[2].y }, { p[0].x, p[0].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[4].x, p[4].y }, { p[5].x, p[5].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[5].x, p[5].y }, { p[7].x, p[7].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[6].x, p[6].y }, { p[7].x, p[7].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[6].x, p[6].y }, { p[4].x, p[4].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[0].x, p[0].y }, { p[4].x, p[4].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[1].x, p[1].y }, { p[5].x, p[5].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[2].x, p[2].y }, { p[6].x, p[6].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+								engine::background->AddLine({ p[3].x, p[3].y }, { p[7].x, p[7].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
+							}
+							if (draw_name) engine::background->AddText({ max.x + border_thickness + 4, min.y + ((max.y - min.y) * .5f) - 7.f }, IM_COL32(text_color[0], text_color[1], text_color[2], text_color[3]), format("{} [{:.{}f}]", name, human_readable_distance, 1).c_str(), 0);
 						}
-						if (use_flat_extents) { // Summarize the extents into a basic rect shape instead of a 3D one.
-							engine::background->AddRect({ min.x, min.y }, { max.x, max.y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), 5, ImDrawCornerFlags_All, border_thickness);
-						} else {
-							engine::background->AddLine({ p[0].x, p[0].y }, { p[1].x, p[1].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[1].x, p[1].y }, { p[3].x, p[3].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[2].x, p[2].y }, { p[3].x, p[3].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[2].x, p[2].y }, { p[0].x, p[0].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[4].x, p[4].y }, { p[5].x, p[5].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[5].x, p[5].y }, { p[7].x, p[7].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[6].x, p[6].y }, { p[7].x, p[7].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[6].x, p[6].y }, { p[4].x, p[4].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[0].x, p[0].y }, { p[4].x, p[4].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[1].x, p[1].y }, { p[5].x, p[5].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[2].x, p[2].y }, { p[6].x, p[6].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-							engine::background->AddLine({ p[3].x, p[3].y }, { p[7].x, p[7].y }, IM_COL32(misc_color[0], misc_color[1], misc_color[2], misc_color[3]), border_thickness);
-						}
-						if (draw_name) engine::background->AddText({ max.x + border_thickness + 4, min.y + ((max.y - min.y) * .5f) - 7.f }, IM_COL32(text_color[0], text_color[1], text_color[2], text_color[3]), format("{} [{:.{}f}]", name, human_readable_distance, 1).c_str(), 0);
 					}
 				}
-			}
-		});
+			});
+		}
 
 		LARGE_INTEGER now;
 		QueryPerformanceCounter(&now);
