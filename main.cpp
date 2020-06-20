@@ -648,7 +648,6 @@ void end_frame() {
 int main(int, char **) {
 
 	tools::load_settings();
-	cg::show_dumb_banner();
 
 	auto pids = cg::proc::get_id("SoTGame.exe");
 	if (!(pids && pids->size())) return 1;
@@ -657,6 +656,8 @@ int main(int, char **) {
 	cg::proc::handle handle(pids->front());
 	if (!handle.vmread_query) return 3;
 	if (!cg::proc::query_module(handle.vmread_query, module->handle, *module)) return 4;
+
+	cg::show_dumb_banner();
 
 	cout << "Process ID: " << reinterpret_cast<void *>(pids->front()) << endl;
 	cout << "Module Handle: " << reinterpret_cast<void *>(module->handle) << endl;
