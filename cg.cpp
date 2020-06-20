@@ -337,7 +337,7 @@ bool cg::esp::init_overlay(const std::string_view &title) {
 bool cg::esp::poll(const std::string_view &target_window_title) {
 	glfwPollEvents();
 	if (glfwWindowShouldClose(window_handle)) return false;
-	auto target_window_handle = FindWindowA(0, "Sea of Thieves");
+	auto target_window_handle = FindWindowA(0, target_window_title.data());
 	if (!target_window_handle) return false;
 	RECT target_frame;
 	if (DwmGetWindowAttribute(target_window_handle, DWMWA_EXTENDED_FRAME_BOUNDS, &target_frame, sizeof(RECT)) != S_OK) return false;
