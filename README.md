@@ -1,3 +1,5 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3dbac95ac0164b17a32b4a36a268d80a)](https://www.codacy.com/manual/b.white.1/sotesp?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=codegoose/sotesp&amp;utm_campaign=Badge_Grade)
+
 # SOTESP
 ### Compatible with [2.0.16](https://www.seaofthieves.com/release-notes/2.0.16) "Haunted Shores" (16th June, 2020)
 This is an external hack, or cheat for Sea of Thieves that enables the player to see treasures, enemies, ships, other players and whatever else through walls and from great distances. A user interface is included that is used to manage render properties of in-game actors as well as to provide an easy-to-observe list of all in-game actors.
