@@ -100,5 +100,10 @@ const uintptr_t scene_component_relative_location_offset = 0x128;
 const uintptr_t scene_component_relative_rotation_offset = 0x134;
 const uintptr_t scene_component_velocity_offset = 0x22c;
 ```
-### Building
-For your convenience; pre-built dependencies and a competent compiler can be found in my personal [development environment](https://gitlab.com/codegoose/devutil).
+### Dependencies
+
+- https://fmt.dev/ **Text formatting.**
+- https://curl.haxx.se/ Was for downloading files but unused currently.
+- http://glew.sourceforge.net/ **OpenGL extension loading.**
+- https://www.glfw.org/ **OpenGL context and user input.**
+- https://github.com/ocornut/imgui **The docking branch. OpenGL\GLFW3 implementation.**
