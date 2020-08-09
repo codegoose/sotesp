@@ -6,8 +6,8 @@ This is an external hack, or cheat for Sea of Thieves that enables the player to
 
 ### Screenshots
 
-<img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-2.jpg" />
-<img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-1.jpg" />
+<img src="https://raw.githubusercontent.com/codegoose/sotesp/master/screenshots/combined-preview-1.jpg" />
+<img src="https://raw.githubusercontent.com/codegoose/sotesp/master/screenshots/combined-preview-2.jpg" />
 
 Some animated GIFs can be viewed [here](https://imgur.com/a/9C1Ayn3).
 
