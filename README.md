@@ -1,21 +1,25 @@
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3dbac95ac0164b17a32b4a36a268d80a)](https://www.codacy.com/manual/b.white.1/sotesp?utm_source=gitlab.com&amp;utm_medium=referral&amp;utm_content=codegoose/sotesp&amp;utm_campaign=Badge_Grade)
-
 # SOTESP
+
 ### Compatible with [2.0.16](https://www.seaofthieves.com/release-notes/2.0.16) "Haunted Shores" (16th June, 2020)
+
 This is an external hack, or cheat for Sea of Thieves that enables the player to see treasures, enemies, ships, other players and whatever else through walls and from great distances. A user interface is included that is used to manage render properties of in-game actors as well as to provide an easy-to-observe list of all in-game actors.
 
 ### Screenshots
+
 <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-2.jpg" />
 <img src="https://gitlab.com/codegoose/sotesp/-/raw/master/screenshots/combined-preview-1.jpg" />
-Some UI screencaps can be found [here](https://imgur.com/a/9C1Ayn3).
+
+Some animated GIFs can be viewed [here](https://imgur.com/a/9C1Ayn3).
 
 ### How's this work?
+
 Basically, this software runs alongside the game and utilizes ```ReadProcessMemory``` from the Windows API to grab and read memory from the target process. It then walks the underlying Unreal Engine 4 architecture within the game to locate game objects and then uses a world to screen routine to highlight objects of interest within the players view.
 
 ***This is against the games TOS and you could be banned for using this*** but as far as I've experienced this is undetected. At the time of writing this, Sea of Thieves doesn't have any official anti-cheat software. Additionally, just due to the fact that is functions via a transparent overlay window, the hack is not be visible when streaming the game. ***This hack is completely external and does not write to, or inject code into the target process.*** It strictly only reads memory.
 
-Primarily based off of Unreal Engine 4.10.1 source code; commited memory pages in the "SoTGame.exe" module of the target process are scanned for static pointers to two UE4 TArray objects: ***GNames*** is a structure which is used to map ID codes of in-game objects to human-readable names like "BP_SmallShipTemplate_C" or the like. ***UWorld*** manages information related to the current level, lists of local players, etc. But most importantly there exists a pointer to a ***ULevel*** object know as "PersistentLevel" that references a list of all ***AActor***'s in the game world. Within each ***AActor*** is an ID that can be used in conjunction with ***GNames*** to identify what exactly each "actor" is.
+Based off of Unreal Engine 4.10.1 source code; commited memory pages in the "SoTGame.exe" module of the target process are scanned for static pointers to two UE4 TArray objects: ***GNames*** is a structure which is used to map ID codes of in-game objects to human-readable names like "BP_SmallShipTemplate_C" or the like. ***UWorld*** manages information related to the current level, lists of local players, etc. But most importantly there exists a pointer to a ***ULevel*** object know as "PersistentLevel" that references a list of all ***AActor***'s in the game world. Within each ***AActor*** is an ID that can be used in conjunction with ***GNames*** to identify what exactly each "actor" is.
 From here we use the structure of ***AActor*** to divulge even more information:
+
 ```c++
 struct actor {
 	// These don't represent the actual structure.
@@ -31,6 +35,7 @@ struct actor {
 ```
 
 All ***AActor***'s have a reference to a "RootSceneComponent" that contains additional information related to actually rendering the ***AActor***. That's what the "component_*" variables are referencing and is of the type ***USceneComponent*** in the source. Process this information and then grab a reference to the "LocalPlayer" from ***UWorld***, which eventually leads you to the ***AActor*** of the local player and it's camera manager. Generate a 3x4 rotation matrix that represents the camera:
+
 ```c++
 void update_local_player_camera_rotation_matrix() {
 	auto pitch = glm::radians(local_player_camera_rotation.x);
@@ -54,6 +59,7 @@ void update_local_player_camera_rotation_matrix() {
 }
 ```
 Then, project needed information onto the viewport for consumption:
+
 ```c++
 /* Converts 3D world coordinates to 2D screen coordinates.
 The local_player_camera_rotation_matrix is updated once per frame.*/
@@ -73,7 +79,9 @@ glm::vec2 project(const glm::vec3 &location) {
 	};
 }
 ```
+
 All this information is obtained by jumping through a list of hand-tuned memory location offsets:
+
 ```c++
 const uintptr_t world_owning_game_instance_offset = 0x1c0;
 const uintptr_t world_persistent_level_offset = 0x30;
@@ -100,6 +108,11 @@ const uintptr_t scene_component_relative_location_offset = 0x128;
 const uintptr_t scene_component_relative_rotation_offset = 0x134;
 const uintptr_t scene_component_velocity_offset = 0x22c;
 ```
+
+### Building
+
+No formal build system or anything. The PS files just execute what's expected to be MSYS2/GCC to compile/link.
+
 ### Dependencies
 
 - https://fmt.dev/ **Text formatting.**
