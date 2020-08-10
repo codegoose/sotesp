@@ -1,4 +1,4 @@
-# SOTESP
+# sotesp
 
 ### Compatible with [2.0.16](https://www.seaofthieves.com/release-notes/2.0.16) "Haunted Shores" (16th June, 2020)
 
